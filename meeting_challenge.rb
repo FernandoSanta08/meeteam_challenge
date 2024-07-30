@@ -8,7 +8,7 @@ class Node
     @id=id
     @log = []
     @neighbors = []
-    @partitioned = {}
+    @partitioned = []
   end
 
   def add_neighbor(node)
@@ -19,6 +19,7 @@ class Node
     neighbors = node_destination ? @neighbors.find{|neighbor| node_destination.include? neighbor.id} : @neighbors
     neighbors = [neighbors].compact unless neighbors.is_a?(Array)
     neighbors.each do |neighbor| 
+      next if @partitioned.include? neighbor
       neighbor.receive_message(self, message)
       create_log("message sent from #{self.id} to #{neighbor.id}: #{message}")
     end
@@ -37,6 +38,10 @@ class Node
     @log << { timestamp: Time.now, event: event }
     puts "[#{Time.now}] Node #{@id}: #{event}"
   end
+
+  def add_partitioned(node)
+    @partitioned += node
+  end
 end
 
 ### TEST
@@ -50,6 +55,7 @@ node2.add_neighbor(node1)
 node2.add_neighbor(node3)
 node3.add_neighbor(node1)
 node3.add_neighbor(node2)
+node1.add_partitioned([node2, node3])
 
 node1.message("A", nil)
 puts node2.log
