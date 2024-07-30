@@ -24,15 +24,18 @@ class Node
   end
   
   def receive_message(sender, message)
-    # todo: Write log
     puts "New message from #{sender.id}: #{message}"
     process_message(message)
   end
 
   def process_message(message)
-    # todo: Write log
+    create_log("Addressed Message: #{message}")
   end
 
+  def create_log(event)
+    @log << { timestamp: Time.now, event: event }
+    puts "[#{Time.now}] Node #{@id}: #{event}"
+  end
 end
 
 ### TEST
@@ -46,4 +49,6 @@ node2.add_neighbor(node1)
 node2.add_neighbor(node3)
 node3.add_neighbor(node1)
 node3.add_neighbor(node2)
-node1.message("test", nil)
+
+node1.message("A", nil)
+puts node2.log
