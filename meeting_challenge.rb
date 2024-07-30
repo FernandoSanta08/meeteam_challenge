@@ -20,6 +20,7 @@ class Node
     neighbors = [neighbors].compact unless neighbors.is_a?(Array)
     neighbors.each do |neighbor| 
       neighbor.receive_message(self, message)
+      create_log("message sent from #{self.id} to #{neighbor.id}: #{message}")
     end
   end
   
